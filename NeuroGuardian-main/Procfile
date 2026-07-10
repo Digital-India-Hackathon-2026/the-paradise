@@ -1,0 +1,1 @@
+web: gunicorn stroke_risk_prediction.wsgi --log-file -

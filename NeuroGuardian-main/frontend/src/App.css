@@ -1,0 +1,346 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.results-card {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 30px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.results-header h2 {
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.timestamp {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.risk-circle-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.risk-circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.risk-circle-inner {
+  width: 160px;
+  height: 160px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.risk-score-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.risk-score-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.risk-level-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 50px;
+  color: white;
+  margin: 2rem 0;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.risk-emoji {
+  font-size: 1.5rem;
+}
+
+.risk-level-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.risk-probability {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.explanation-section {
+  margin: 2rem 0;
+}
+
+.explanation-section h3 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.explanation-summary {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.factors-list {
+  margin: 2rem 0;
+}
+
+.factor-item {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.factor-item.increases {
+  border-left: 5px solid #f44336;
+}
+
+.factor-item.decreases {
+  border-left: 5px solid #4CAF50;
+}
+
+.factor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.factor-name {
+  font-weight: bold;
+  color: #333;
+  text-transform: capitalize;
+}
+
+.factor-direction-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.factor-item.increases .factor-direction-badge {
+  background: #ffebee;
+  color: #f44336;
+}
+
+.factor-item.decreases .factor-direction-badge {
+  background: #e8f5e9;
+  color: #4CAF50;
+}
+
+.factor-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.impact-bar-container {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.impact-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.results-actions {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.btn-primary, .btn-secondary {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.disclaimer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 10px;
+  color: #856404;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ================================================================
+   LANDING PAGE — RESPONSIVE OVERRIDES
+   ================================================================ */
+
+/* Hero two-column → single-column on mobile */
+.hero-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Dashboard nav tabs: wrap text on small screens */
+.dashboard-nav-tab span {
+  font-size: 0.875rem;
+}
+
+/* ================================================================
+   TABLET (≤ 768px)
+   ================================================================ */
+@media (max-width: 768px) {
+  /* Hero: stack into a single column */
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    padding-top: 6rem; /* clear fixed navbar */
+    min-height: auto !important;
+  }
+
+  /* Show hamburger button, hide desktop nav */
+  .mobile-hamburger {
+    display: flex !important;
+    font-size: 1.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .md-nav-links {
+    display: none !important;
+  }
+
+  /* ResultsCard actions */
+  .results-actions {
+    flex-direction: column;
+  }
+
+  /* Risk circle scale down */
+  .risk-circle {
+    width: 160px;
+    height: 160px;
+  }
+  .risk-circle-inner {
+    width: 128px;
+    height: 128px;
+  }
+  .risk-score-value {
+    font-size: 2rem;
+  }
+}
+
+/* ================================================================
+   SMALL MOBILE — iPhone X/XS (375px–414px)
+   ================================================================ */
+@media (max-width: 480px) {
+  /* Dashboard header height reduction */
+  .h-20 {
+    height: 3.5rem !important;
+  }
+
+  /* Dashboard main: offset for smaller header */
+  main.container {
+    margin-top: 4rem;
+  }
+
+  /* Dashboard nav tabs: icon only or smaller text */
+  .dashboard-nav-tab {
+    padding: 0.5rem 0.6rem !important;
+  }
+  .dashboard-nav-tab span {
+    font-size: 0.7rem;
+  }
+
+  /* Notification dropdown: full width on tiny screens */
+  .notifications-dropdown {
+    width: calc(100vw - 2rem) !important;
+    right: -1rem !important;
+  }
+
+  /* Hero: even less gap */
+  .hero-grid {
+    gap: 1rem !important;
+  }
+
+  /* About mission grid: single column */
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* CTA section inner padding */
+  .results-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  /* Risk level badge: wrap text */
+  .risk-level-badge {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  .risk-level-text {
+    font-size: 1.1rem;
+  }
+  .risk-probability {
+    font-size: 1rem;
+  }
+}

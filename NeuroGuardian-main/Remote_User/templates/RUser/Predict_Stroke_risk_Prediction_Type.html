@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stroke Risk Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .nav {
+            text-align: right;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: #764ba2;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 5px;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s;
+            grid-column: span 2;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .result-container {
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-title {
+            text-align: center;
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .risk-box {
+            text-align: center;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .risk-box.low {
+            background: #4CAF50;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+        }
+        
+        .risk-box.moderate {
+            background: #FF9800;
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.3);
+        }
+        
+        .risk-box.high {
+            background: #f44336;
+            box-shadow: 0 10px 30px rgba(244, 67, 54, 0.3);
+        }
+        
+        .risk-box.critical {
+            background: #9C27B0;
+            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.3);
+        }
+        
+        .risk-level {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .probability {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .analysis-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .analysis-title {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .analysis-title:before {
+            content: "🔍";
+            font-size: 1.2em;
+        }
+        
+        .factor-list {
+            list-style: none;
+        }
+        
+        .factor-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-left: 5px solid;
+            transition: transform 0.3s;
+        }
+        
+        .factor-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .factor-item.increases {
+            border-left-color: #f44336;
+        }
+        
+        .factor-item.decreases {
+            border-left-color: #4CAF50;
+        }
+        
+        .factor-name {
+            font-weight: bold;
+            color: #333;
+            text-transform: capitalize;
+            font-size: 1.1em;
+        }
+        
+        .factor-direction {
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .factor-direction.increases {
+            color: #f44336;
+        }
+        
+        .factor-direction.decreases {
+            color: #4CAF50;
+        }
+        
+        .factor-value {
+            color: #666;
+            font-style: italic;
+            background: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .impact-bar {
+            margin-top: 10px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .impact-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+        
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .score-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+        }
+        
+        .disclaimer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            color: #856404;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            
+            button {
+                grid-column: span 1;
+            }
+            
+            .risk-level {
+                font-size: 2em;
+            }
+            
+            .probability {
+                font-size: 1.1em;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/Predict_Stroke_risk_Prediction_Type/">PREDICT</a>
+            <a href="/ViewYourProfile/">VIEW YOUR PROFILE</a>
+            <a href="/logout/">LOGOUT</a>
+        </div>
+        
+        <h1>🧠 PREDICTION OF STROKE RISK TYPE</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>📋 Enter Reading Number</label>
+                    <input type="text" name="idn" placeholder="e.g., PT001" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>⚥ Enter Gender</label>
+                    <select name="gender" required>
+                        <option value="">--- Select Gender ---</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Enter Age</label>
+                    <input type="number" name="age" step="1" placeholder="e.g., 65" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>💓 Hypertension Status</label>
+                    <select name="hypertension" required>
+                        <option value="">--- Select ---</option>
+                        <option value="0">0 - No</option>
+                        <option value="1">1 - Yes</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>❤️ Heart Disease</label>
+                    <select name="heart_disease" required>
+                        <option value="">--- Select ---</option>
+                        <option value="0">0 - No</option>
+                        <option value="1">1 - Yes</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>💍 Ever Married</label>
+                    <select name="ever_married" required>
+                        <option value="">--- Select ---</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>💼 Work Type</label>
+                    <select name="work_type" required>
+                        <option value="">--- Select ---</option>
+                        <option value="Private">Private</option>
+                        <option value="Self-employed">Self-employed</option>
+                        <option value="Govt_job">Government Job</option>
+                        <option value="children">Children</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>🏠 Residence Type</label>
+                    <select name="Residence_type" required>
+                        <option value="">--- Select ---</option>
+                        <option value="Urban">Urban</option>
+                        <option value="Rural">Rural</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>🩸 Avg Glucose Level</label>
+                    <input type="number" name="avg_glucose_level" step="0.01" placeholder="e.g., 145.6" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>⚖️ BMI</label>
+                    <input type="number" name="bmi" step="0.1" placeholder="e.g., 28.5" required>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>🚬 Smoking Status</label>
+                    <select name="smoking_status" required>
+                        <option value="">--- Select ---</option>
+                        <option value="never smoked">Never Smoked</option>
+                        <option value="formerly smoked">Formerly Smoked</option>
+                        <option value="smokes">Currently Smokes</option>
+                    </select>
+                </div>
+                
+                <button type="submit">🔮 Predict Stroke Risk</button>
+            </div>
+        </form>
+        
+        {% if objs %}
+        <div class="result-container">
+            <div class="result-title">📊 STROKE RISK PREDICTION RESULT</div>
+            
+            <div class="risk-box 
+                {% if objs == 'No Risk' %}low
+                {% elif objs == 'Moderate Risk' %}moderate
+                {% elif objs == 'More Risk' %}high
+                {% elif objs == 'Critical Risk' %}critical
+                {% endif %}">
+                <div class="risk-level">{{ objs }}</div>
+                {% if advanced_result %}
+                <div class="probability">Probability: {{ advanced_result.probability }}</div>
+                {% endif %}
+            </div>
+            
+            {% if advanced_result %}
+            <div class="score-display">
+                <div class="score-item">
+                    <div class="score-label">Risk Score</div>
+                    <div class="score-value">{{ advanced_result.risk_score|floatformat:3 }}</div>
+                </div>
+            </div>
+            
+            <div class="analysis-section">
+                <div class="analysis-title">Why this result?</div>
+                
+                <div class="factor-list">
+                    {% for factor in advanced_result.explanation.factors %}
+                    <div class="factor-item {{ factor.direction }}">
+                        <div class="factor-name">{{ factor.feature|title }}</div>
+                        <div class="factor-direction {{ factor.direction }}">
+                            {{ factor.direction|upper }} risk
+                        </div>
+                        <div class="factor-value">Current: {{ factor.value }}</div>
+                        <div class="impact-bar">
+                            <div class="impact-fill" style="width: {{ factor.impact|abs|multiply:20 }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="button-group">
+                <a href="/Predict_Stroke_risk_Prediction_Type/" class="btn btn-primary">🔄 New Prediction</a>
+                <a href="/ViewYourProfile/" class="btn btn-secondary">👤 View Profile</a>
+            </div>
+            
+            <div class="disclaimer">
+                ⚕️ This is an AI-powered prediction tool. Please consult with a healthcare professional for medical advice.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

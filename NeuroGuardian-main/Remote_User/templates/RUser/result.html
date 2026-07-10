@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stroke Risk Prediction Result</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 2.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .risk-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .risk-label {
+            font-size: 1.2em;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .risk-level {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .risk-level.low {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+        }
+        
+        .risk-level.moderate {
+            background: #FF9800;
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.4);
+        }
+        
+        .risk-level.high {
+            background: #f44336;
+            color: white;
+            box-shadow: 0 10px 30px rgba(244, 67, 54, 0.4);
+        }
+        
+        .risk-level.critical {
+            background: #9C27B0;
+            color: white;
+            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.4);
+        }
+        
+        .probability {
+            font-size: 2em;
+            color: #333;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .probability small {
+            font-size: 0.5em;
+            color: #666;
+            font-weight: normal;
+        }
+        
+        .explanation {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .explanation h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .explanation h3:before {
+            content: "🔍";
+            font-size: 1.2em;
+        }
+        
+        .factor-list {
+            list-style: none;
+        }
+        
+        .factor-item {
+            background: white;
+            border-left: 5px solid;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .factor-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .factor-item.increases {
+            border-left-color: #f44336;
+        }
+        
+        .factor-item.decreases {
+            border-left-color: #4CAF50;
+        }
+        
+        .factor-name {
+            font-weight: bold;
+            color: #333;
+            text-transform: capitalize;
+            font-size: 1.1em;
+        }
+        
+        .factor-direction {
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .factor-direction.increases {
+            color: #f44336;
+        }
+        
+        .factor-direction.decreases {
+            color: #4CAF50;
+        }
+        
+        .factor-value {
+            color: #666;
+            font-style: italic;
+            background: #f1f3f5;
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .impact-bar {
+            margin-top: 10px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .impact-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            border: 2px solid transparent;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .timestamp {
+            text-align: center;
+            margin-top: 20px;
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .disclaimer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            color: #856404;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .risk-level {
+                font-size: 2em;
+            }
+            
+            .probability {
+                font-size: 1.5em;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Stroke Risk Analysis</h1>
+        <div class="subtitle">AI-Powered Prediction Results</div>
+        
+        <div class="risk-card">
+            <div class="risk-label">Your Risk Level</div>
+            <div class="risk-level {{ result.risk_level|lower|cut:' ' }}">
+                {{ result.risk_level }}
+            </div>
+            <div class="probability">
+                {{ result.probability }}
+                <small>probability</small>
+            </div>
+        </div>
+        
+        {% if result.explanation %}
+        <div class="explanation">
+            <h3>Why this result?</h3>
+            <p style="color: #666; margin-bottom: 20px;">{{ result.explanation.summary }}</p>
+            
+            <div class="factor-list">
+                {% for factor in result.explanation.factors %}
+                <div class="factor-item {{ factor.direction }}">
+                    <div class="factor-name">{{ factor.feature|title }}</div>
+                    <div class="factor-direction {{ factor.direction }}">
+                        {{ factor.direction|upper }} risk
+                    </div>
+                    <div class="factor-value">Current value: {{ factor.value }}</div>
+                    <div class="impact-bar">
+                        <div class="impact-fill" style="width: {{ factor.impact|abs|multiply:20 }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="button-group">
+            <a href="/Predict_Stroke_risk_Prediction_Type/" class="btn btn-primary">🔄 New Prediction</a>
+            <a href="/ViewYourProfile/" class="btn btn-secondary">👤 View Profile</a>
+        </div>
+        
+        <div class="timestamp">
+            Prediction generated at: {% now "Y-m-d H:i:s" %}
+        </div>
+        
+        <div class="disclaimer">
+            ⚕️ This is an AI-powered prediction tool. Please consult with a healthcare professional for medical advice.
+        </div>
+    </div>
+</body>
+</html>
